@@ -1,0 +1,51 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import configuration from 'config/configuration';
+
+import { AddressesModule } from './addresses/addresses.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
+import { DeviceTokensModule } from './device-tokens/device-tokens.module';
+import { OrdersModule } from './orders/orders.module';
+import { ProductProvidersModule } from './product-providers/product-providers.module';
+import { ProductStockTransactionsModule } from './product-stock-transactions/product-stock-transactions.module';
+import { ProductsModule } from './products/products.module';
+import { ReservationTypesModule } from './reservation-types/reservation-types.module';
+import { ReservationsModule } from './reservations/reservations.module';
+import { UsersModule } from './users/users.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        configService.get('database'),
+    }),
+    AddressesModule,
+    AuthModule,
+    CategoriesModule,
+    DeviceTokensModule,
+    OrdersModule,
+    ProductProvidersModule,
+    ProductStockTransactionsModule,
+    ProductsModule,
+    ReservationTypesModule,
+    ReservationsModule,
+    UsersModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {
+  constructor() {
+    console.log(process.env.TYPEORM_HOST);
+    
+  }
+}
