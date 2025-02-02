@@ -2,13 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsDateString,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   Length,
   ValidateNested,
 } from 'class-validator';
+import { UserGender } from 'src/common/enums/user-gender.enum';
 import { CreateAddressDto } from '../../addresses/dto/create-address.dto';
 import { passwordRegex } from '../../common/constants';
 
@@ -42,6 +45,16 @@ export class RegisterCustomerDTO {
   @IsPhoneNumber()
   @Length(6, 32)
   phoneNumber: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDateString()
+  dateOfBirth: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEnum(UserGender)
+  gender: UserGender;
 
   @ApiProperty({
     required: false,

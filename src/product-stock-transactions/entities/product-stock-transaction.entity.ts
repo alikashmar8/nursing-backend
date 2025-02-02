@@ -1,3 +1,4 @@
+import { BaseEntity } from 'src/common/entities/base-entity.entity';
 import { Product } from 'src/products/entities/product.entity';
 import {
   Column,
@@ -9,7 +10,7 @@ import {
 import { ProductProvider } from './../../product-providers/entities/product-provider.entity';
 
 @Entity('product_stock_transactions')
-export class ProductStockTransaction {
+export class ProductStockTransaction extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
 

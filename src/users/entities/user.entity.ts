@@ -1,3 +1,4 @@
+import { UserGender } from './../../common/enums/user-gender.enum';
 import * as argon from 'argon2';
 import { Exclude } from 'class-transformer';
 import {
@@ -16,6 +17,7 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { DeviceToken } from '../../device-tokens/entities/device-token.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Reservation } from '../../reservations/entities/reservation.entity';
+import { Shift } from 'src/shifts/entities/shift.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -38,6 +40,9 @@ export class User extends BaseEntity {
   @Column({ name: 'phoneNumber', nullable: false, unique: true })
   phoneNumber: string;
 
+  @Column({ name: 'dateOfBirth', nullable: true })
+  dateOfBirth?: Date;
+
   @Column({ name: 'photo', nullable: true })
   photo?: string;
 
@@ -48,6 +53,14 @@ export class User extends BaseEntity {
     default: UserRole.CUSTOMER,
   })
   role: UserRole;
+
+  @Column({
+    name: 'gender',
+    type: 'enum',
+    enum: UserGender,
+    nullable: false,
+  })
+  gender: UserGender;
 
   @Column({ default: true })
   isActive: boolean;
@@ -101,8 +114,8 @@ export class User extends BaseEntity {
   reservationRequests: Reservation[];
 
   @Exclude()
-  @OneToMany((type) => Reservation, (reservation) => reservation.nurse)
-  assignedReservations: Reservation[];
+  @OneToMany((type) => Shift, (shift) => shift.nurse)
+  assignedShifts: Shift[];
 
   // @Exclude()
   // @OneToMany((type) => Message, (message) => message.user)

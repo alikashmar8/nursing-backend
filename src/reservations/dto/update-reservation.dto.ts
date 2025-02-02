@@ -12,17 +12,4 @@ export class UpdateReservationDto extends PartialType(CreateReservationDto) {
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   confirmedDate?: Date;
-
-  @ApiProperty({ required: false, nullable: true })
-  @IsOptional()
-  total: number;
-
-  @ApiProperty({ required: false, nullable: true })
-  @IsOptional()
-  @IsBoolean()
-  isPaid?: boolean;
-
-  @ApiProperty({ required: false, nullable: true })
-  @IsOptional()
-  nurseId?: string;
 }

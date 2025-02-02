@@ -8,6 +8,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
 import { OrderStatus } from './enums/order-status.enum';
+import { UpdateOrderItemDTO } from './dto/update-order-item.dto';
+import { ProductStockTransaction } from 'src/product-stock-transactions/entities/product-stock-transaction.entity';
 
 @Injectable()
 export class OrdersService {
@@ -32,7 +34,7 @@ export class OrdersService {
         .save(Order, createOrderDto)
         .catch((err) => {
           console.log(err);
-          throw new BadRequestException('Error saving Order  !');
+          throw new BadRequestException('Error saving Order!');
         });
 
       //TODO: update product quantity--;
@@ -47,7 +49,7 @@ export class OrdersService {
               `Insufficient quantity for: ${product.title}`,
             );
 
-          item.price = product.price;
+          item.unitPrice = product.price;
           await queryRunner.manager.update(Product, product.id, {
             quantity: product.quantity - item.quantity,
           });
@@ -230,18 +232,64 @@ export class OrdersService {
         const product = await this.productsRepository.findOneOrFail({
           where: { id: item.productId },
         });
-        item.price = product.price;
+        item.unitPrice = product.price;
+        total += item.unitPrice * item.quantity;
         return item;
       }),
     );
-    items.forEach((item) => {
-      total += item.price * item.quantity;
-    });
+    // items.forEach((item) => {
+    //   total += item.unitPrice * item.quantity;
+    // });
 
     //TODO: calculate if there is a discount
     let discountAmount = 0;
 
     total -= discountAmount;
     return { total, discountAmount };
+  }
+
+  async adminUpdateOrderItem(itemId: string, body: UpdateOrderItemDTO) {
+    const orderItem = await this.dataSource
+      .getRepository(OrderItem)
+      .findOneOrFail({
+        where: {
+          id: itemId,
+        },
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new BadRequestException('Order Item not found!');
+      });
+    if (body.productProviderId) {
+      const stockTransaction = await this.dataSource
+        .getRepository(ProductStockTransaction)
+        .findOne({
+          where: {
+            productId: orderItem.productId,
+            productProviderId: body.productProviderId,
+          },
+          order: {
+            createdAt: 'DESC',
+          },
+        });
+      if (!stockTransaction)
+        throw new BadRequestException(
+          `No product stock transaction found for product provider`,
+        );
+
+      orderItem.unitCost = stockTransaction.cost;
+    }
+
+    if (body.isPaidToProvider != null && body.isPaidToProvider != undefined) {
+      orderItem.isPaidToProvider = body.isPaidToProvider;
+    }
+
+    return await this.dataSource
+      .getRepository(OrderItem)
+      .save(orderItem)
+      .catch((err) => {
+        console.log(err);
+        throw new BadRequestException('Error updating order item!');
+      });
   }
 }

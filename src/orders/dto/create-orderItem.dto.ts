@@ -5,12 +5,12 @@ export class CreateOrderItemDto {
   @ApiProperty()
   @IsNotEmpty()
   quantity: number;
-  
+
   @ApiProperty()
   @IsNotEmpty()
   productId: string;
 
   // The following attributes are not passed in request
-  price: number;
+  unitPrice: number;
   orderId: number;
 }

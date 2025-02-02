@@ -1,11 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { Address } from '../../addresses/entities/address.entity';
 import { BaseEntity } from '../../common/entities/base-entity.entity';
 import { PaymentType } from '../../common/enums/payment-type.enum';
 import { ReservationStatus } from '../../common/enums/reservation-status.enum';
-import { User } from '../../users/entities/user.entity';
 import { ReservationType } from '../../reservation-types/entities/reservation-type.entity';
+import { User } from '../../users/entities/user.entity';
+import { Shift } from './../../shifts/entities/shift.entity';
 
 @Entity('service-requests')
 export class Reservation extends BaseEntity {
@@ -13,7 +14,7 @@ export class Reservation extends BaseEntity {
     name: 'status',
     type: 'enum',
     enum: ReservationStatus,
-    default: ReservationStatus.PENDING_APPROVAL,
+    default: ReservationStatus.PENDING,
   })
   status: ReservationStatus;
 
@@ -85,12 +86,6 @@ export class Reservation extends BaseEntity {
   })
   customerId: string;
 
-  @Column({
-    name: 'nurseId',
-    nullable: true,
-  })
-  nurseId?: string;
-
   @Column({ name: 'addressId', nullable: false })
   addressId: string;
 
@@ -112,9 +107,6 @@ export class Reservation extends BaseEntity {
   @JoinColumn({ name: 'addressId' })
   address: Address;
 
-  @ManyToOne((type) => User, (nurse) => nurse.assignedReservations, {
-    onDelete: 'RESTRICT',
-  })
-  @JoinColumn({ name: 'nurseId' })
-  nurse?: User;
+  @OneToMany((type) => Shift, (shift) => shift.reservation)
+  shifts: Shift[];
 }

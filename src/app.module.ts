@@ -15,6 +15,7 @@ import { ProductStockTransactionsModule } from './product-stock-transactions/pro
 import { ProductsModule } from './products/products.module';
 import { ReservationTypesModule } from './reservation-types/reservation-types.module';
 import { ReservationsModule } from './reservations/reservations.module';
+import { ShiftsModule } from './shifts/shifts.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     ProductsModule,
     ReservationTypesModule,
     ReservationsModule,
+    ShiftsModule,
     UsersModule,
   ],
   controllers: [AppController],
@@ -46,6 +48,5 @@ import { UsersModule } from './users/users.module';
 export class AppModule {
   constructor() {
     console.log(process.env.TYPEORM_HOST);
-    
   }
 }

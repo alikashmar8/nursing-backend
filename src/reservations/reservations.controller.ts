@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -31,14 +32,18 @@ import { CancelReservationDTO } from './dto/cancel-reservation.dto';
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
-  @Roles(UserRole.CUSTOMER)
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
   @UseGuards(RolesGuard)
   @Post()
   async create(
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() loggedInUser: User,
   ) {
-    createReservationDto.customerId = loggedInUser.id;
+    if (loggedInUser.role === UserRole.CUSTOMER)
+      createReservationDto.customerId = loggedInUser.id;
+    if (loggedInUser.role === UserRole.ADMIN)
+      if (!createReservationDto.customerId)
+        throw new BadRequestException('Customer is required');
     return await this.reservationsService.create(createReservationDto);
   }
 
@@ -48,7 +53,6 @@ export class ReservationsController {
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'status', required: false })
   @ApiQuery({ name: 'customerId', required: false })
-  @ApiQuery({ name: 'nurseId', required: false })
   @ApiQuery({ name: 'isPaid', required: false })
   @Get()
   async findAll(@Query() query: any, @CurrentUser() loggedInUser: User) {
@@ -58,7 +62,7 @@ export class ReservationsController {
   @UseGuards(IsLoggedInGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @CurrentUser() loggedInUser: User) {
-    const reservation = await this.reservationsService.findOne(id);
+    const reservation = await this.reservationsService.findOne(id, ['shifts']);
     if (
       loggedInUser.role === UserRole.CUSTOMER &&
       reservation.customerId !== loggedInUser.id
@@ -66,13 +70,13 @@ export class ReservationsController {
       throw new UnauthorizedException(
         'You are not authorized to view this reservation',
       );
-    if (
-      loggedInUser.role === UserRole.NURSE &&
-      reservation.nurseId !== loggedInUser.id
-    )
-      throw new UnauthorizedException(
-        'You are not authorized to view this reservation',
-      );
+    // if (
+    //   loggedInUser.role === UserRole.NURSE &&
+    //   reservation.nurseId !== loggedInUser.id
+    // )
+    //   throw new UnauthorizedException(
+    //     'You are not authorized to view this reservation',
+    //   );
     return reservation;
   }
 

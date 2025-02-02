@@ -1,10 +1,12 @@
 import { ProductProvider } from 'src/product-providers/entities/product-provider.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { Order } from './order.entity';
@@ -12,7 +14,7 @@ import { Order } from './order.entity';
 @Entity('order_items')
 export class OrderItem {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column({
     name: 'quantity',
@@ -21,12 +23,26 @@ export class OrderItem {
   quantity: number;
 
   @Column({
-    name: 'price',
+    name: 'unitPrice',
     nullable: false,
     type: 'decimal',
     default: 0,
   })
-  price: number;
+  unitPrice: number;
+
+  @Column({
+    name: 'unitCost',
+    nullable: false,
+    type: 'decimal',
+    default: 0,
+  })
+  unitCost: number;
+
+  @Column({
+    name: 'isPaidToProvider',
+    default: false,
+  })
+  isPaidToProvider: boolean;
 
   @Column({
     name: 'orderId',
@@ -43,9 +59,15 @@ export class OrderItem {
 
   @Column({
     name: 'productProviderId',
-    nullable: false,
+    nullable: true,
   })
-  paymentProviderId: string;
+  productProviderId?: string;
+
+  @CreateDateColumn({ name: 'createdAt' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updatedAt' })
+  updatedAt: Date;
 
   @ManyToOne((type) => Order, (order) => order.orderItems, {
     onDelete: 'CASCADE',
@@ -67,67 +89,3 @@ export class OrderItem {
   @JoinColumn({ name: 'productProviderId' })
   productProvider: ProductProvider;
 }
-/**
-   async calculateRequestCost(data: {
-   serviceTypeId: string;
-   promoCode?: string;
-   vehicleId?: string;
-   tips: number;
-   userId: string
- }): Promise<{
-   total: number;
-   totalLBP: number;
- }> {
-
-   let total: number = 0;
-   let totalLBP: number = 0;
-
-   const exchangeRateSetting: Setting = await this.settingsRepository
-     .findOneOrFail({
-       where: {
-         key: EXCHANGE_RATE,
-       },
-     })
-     .catch((err) => {
-       throw new BadRequestException('Error calculating prices', err);
-     });
-   const exchangeRate: number = Number(exchangeRateSetting.value);
-
-   const serviceType = await this.serviceTypesService.findOneByIdOrFail(
-     data.serviceTypeId,
-   );
-   total += serviceType.price;
-   totalLBP += exchangeRate * serviceType.price;
-
-   if (data.vehicleId) {
-     const vehicle = await this.vehiclesService.findOneByIdOrFail(
-       data.vehicleId,
-     );
-     let key = vehicle.type + '_COST';
-     let setting = await this.settingsService.findByKey(key);
-     if (setting && setting.value != null) {
-       total += Number(setting.value);
-       totalLBP += exchangeRate * Number(setting.value);
-     }
-   }
-
-   total += data.tips;
-   totalLBP += exchangeRate * serviceType.price;
-
-   let discountAmount: number = 0;
-   let promoIsValid: boolean;
-   const promo = await this.promoService.findOne(data.promoCode);
-   promoIsValid = await this.promoService.checkValidity(data.userId, data.promoCode);
-
-   if (promoIsValid && promo.discountPercentage) {
-     discountAmount = total * promo.discountPercentage / 100;
-   } else {
-     if (promoIsValid && promo.discountAmount)
-       discountAmount = promo.discountAmount;
-   }
-   total -= discountAmount;
-   // todo: check for fees or other costs in case of payment by credit cards
-   return { total, totalLBP };
- }
-
- */

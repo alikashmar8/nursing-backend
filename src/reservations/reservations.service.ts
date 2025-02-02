@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -29,7 +29,6 @@ export class ReservationsService {
       search?: string;
       status?: ReservationStatus;
       customerId?: string;
-      nurseId?: string;
       isPaid?: boolean;
     },
     currentUser: User,
@@ -40,8 +39,6 @@ export class ReservationsService {
     if (currentUser.role === UserRole.CUSTOMER)
       filters.customerId = currentUser.id;
 
-    if (currentUser.role === UserRole.NURSE) filters.nurseId = currentUser.id;
-
     const reservationsQuery =
       await this.reservationsRepository.createQueryBuilder('reservation');
     reservationsQuery.leftJoinAndSelect('reservation.customer', 'customer');
@@ -49,17 +46,11 @@ export class ReservationsService {
       'reservation.reservationType',
       'reservationType',
     );
-    reservationsQuery.leftJoinAndSelect('reservation.nurse', 'nurse');
     reservationsQuery.leftJoinAndSelect('reservation.address', 'address');
 
     if (filters.customerId)
       reservationsQuery.andWhere('reservation.customerId = :customerId', {
         customerId: filters.customerId,
-      });
-
-    if (filters.nurseId)
-      reservationsQuery.andWhere('reservation.nurseId = :nurseId', {
-        nurseId: filters.nurseId,
       });
 
     if (filters.status)
@@ -123,6 +114,9 @@ export class ReservationsService {
     id: string,
     cancelReservationDto: CancelReservationDTO,
   ) {
+    const reservation = await this.findOne(id);
+    if (reservation.status != ReservationStatus.PENDING)
+      throw new BadRequestException('invalid reservation status');
     return await this.reservationsRepository.update(id, {
       ...cancelReservationDto,
       status: ReservationStatus.CANCELLED,

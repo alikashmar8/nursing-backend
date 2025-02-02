@@ -21,6 +21,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersService } from './orders.service';
 import { UserRole } from 'src/common/enums/user-role.enum';
 import { IsLoggedInGuard } from 'src/auth/guards/is-logged-in.guard';
+import { UpdateOrderItemDTO } from './dto/update-order-item.dto';
 
 @ApiTags('Orders')
 @ApiBearerAuth('access_token')
@@ -75,6 +76,16 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
     return await this.ordersService.update(id, updateOrderDto);
+  }
+
+  @UseGuards(IsLoggedInGuard)
+  @Patch(':id/order-items/:itemId')
+  async updateOrderItem(
+    @Param('id') id: string,
+    @Param('itemId') itemId: string,
+    @Body() body: UpdateOrderItemDTO,
+  ) {
+    return await this.ordersService.adminUpdateOrderItem(itemId, body);
   }
 
   @UseGuards(IsLoggedInGuard)
