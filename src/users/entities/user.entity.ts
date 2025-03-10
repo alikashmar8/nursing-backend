@@ -18,6 +18,7 @@ import { DeviceToken } from '../../device-tokens/entities/device-token.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Reservation } from '../../reservations/entities/reservation.entity';
 import { Shift } from 'src/shifts/entities/shift.entity';
+import { PatientProfile } from 'src/patient-profile/entities/patient-profile.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -116,6 +117,13 @@ export class User extends BaseEntity {
   @Exclude()
   @OneToMany((type) => Shift, (shift) => shift.nurse)
   assignedShifts: Shift[];
+
+
+  //added as a relationship between user and the patient 
+  @OneToMany(() => PatientProfile, (patientProfile) => patientProfile.user, {
+    cascade: true,
+  })
+  patientProfiles: PatientProfile[];
 
   // @Exclude()
   // @OneToMany((type) => Message, (message) => message.user)

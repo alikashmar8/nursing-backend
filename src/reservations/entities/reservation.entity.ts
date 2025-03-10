@@ -7,6 +7,7 @@ import { ReservationStatus } from '../../common/enums/reservation-status.enum';
 import { ReservationType } from '../../reservation-types/entities/reservation-type.entity';
 import { User } from '../../users/entities/user.entity';
 import { Shift } from './../../shifts/entities/shift.entity';
+import { PatientProfile } from 'src/patient-profile/entities/patient-profile.entity';
 
 @Entity('service-requests')
 export class Reservation extends BaseEntity {
@@ -109,4 +110,13 @@ export class Reservation extends BaseEntity {
 
   @OneToMany((type) => Shift, (shift) => shift.reservation)
   shifts: Shift[];
+
+  @ManyToOne(() => PatientProfile, (patientProfile) => patientProfile.reservations, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'patientProfileId' })
+  patientProfile: PatientProfile;
+
+  @Column({ name: 'patientProfileId', nullable: false })
+  patientProfileId: string;
 }

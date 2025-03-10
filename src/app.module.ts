@@ -19,6 +19,7 @@ import { ReservationTypesModule } from './reservation-types/reservation-types.mo
 import { ReservationsModule } from './reservations/reservations.module';
 import { ShiftsModule } from './shifts/shifts.module';
 import { UsersModule } from './users/users.module';
+import { PatientProfileModule } from './patient-profile/patient-profile.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UsersModule } from './users/users.module';
     ReservationsModule,
     ShiftsModule,
     UsersModule,
+    PatientProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
