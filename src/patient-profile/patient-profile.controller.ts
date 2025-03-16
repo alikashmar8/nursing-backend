@@ -19,7 +19,7 @@ export class PatientProfileController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.patientProfileService.findOne(id);
+    return this.patientProfileService.findOneOrFail(id);
   }
 
   @Patch(':id')

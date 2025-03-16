@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { Address } from 'src/addresses/entities/address.entity';
+/* eslint-disable prettier/prettier */ 
 import { MartialStatus } from 'src/common/enums/martial-status.enum';
 import { PrefferedLanguage } from 'src/common/enums/PrefferedLanguage.enum';
 import { UserGender } from 'src/common/enums/user-gender.enum';
@@ -12,7 +11,9 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
+import { CreatePatientProfileDto } from '../dto/create-patient-profile.dto';
 
 @Entity('patient_profile')
 export class PatientProfile  {
@@ -48,34 +49,32 @@ export class PatientProfile  {
   @Column({ name: 'emergencyNumber', nullable: false, unique: true })
   emergencyNumber: number;
 
-  @Column({ name: 'address', nullable: true, unique: false })
-  address: Address;
-
+  
   //enum should be added
-  @Column({
-    name: 'martial-status',
-    type: 'enum',
-    enum: MartialStatus,
-    nullable: false,
-  })
-  martial_status: MartialStatus;
+  // @Column({
+  //   name: 'martial-status',
+  //   type: 'enum',
+  //   enum: MartialStatus,
+  //   nullable: false,
+  // })
+  // martial_status: MartialStatus;
 
   //enum should be added 
-  @Column({
-    name: 'language',
-    type: 'enum',
-    enum: PrefferedLanguage,
-    nullable: false,
-  })
-  language: PrefferedLanguage;
+  // @Column({
+  //   name: 'language',
+  //   type: 'enum',
+  //   enum: PrefferedLanguage,
+  //   nullable: false,
+  // })
+  // language: PrefferedLanguage;
 
 
 
-  @ManyToOne(() => User, (user) => user.patientProfiles, { nullable: false })
+  @ManyToOne(() => User, (user) => user.patientProfiles)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ name: 'userId', nullable: false })
+  @Column({ name: 'userId', nullable: true })
   userId: string;
 
   @OneToMany(() => Reservation, (reservation) => reservation.patientProfile)

@@ -2,12 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  isNotEmpty,
   IsNotEmpty,
   IsOptional,
   Length,
   Matches,
   ValidateNested,
 } from 'class-validator';
+import { UserGender } from 'src/common/enums/user-gender.enum';
 
 export class CreatePatientProfileDto {
     @ApiProperty()
@@ -41,5 +43,13 @@ export class CreatePatientProfileDto {
     @ApiProperty()
     @IsNotEmpty()
     @Length(6, 32)
-    emergenceNumber: number;
+    emergencyNumber: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    gender: UserGender;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    dateOfBirth: Date;
 }
