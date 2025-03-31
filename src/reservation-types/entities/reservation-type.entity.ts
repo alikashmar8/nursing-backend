@@ -15,4 +15,10 @@ export class ReservationType extends BaseEntity {
 
   @Column({ name: 'isMultipleShifts', nullable: false })
   isMultipleShifts: boolean;
+
+  @Column({ name: 'displayMinimalInformation', nullable: false, default: false })
+  displayMinimalInformation: boolean;
+
+  @Column({ name: 'displaySectionId', nullable: false, default: 1 })
+  displaySectionId: number;
 }
