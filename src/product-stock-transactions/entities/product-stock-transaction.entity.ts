@@ -20,7 +20,11 @@ export class ProductStockTransaction extends BaseEntity {
   @Column({ name: 'quantity', nullable: false })
   quantity: number;
 
-  @Column({ name: 'cost', nullable: false })
+  @Column({
+    name: 'cost',
+    type: 'float',
+    nullable: false,
+  })
   cost: number;
 
   @Column({ name: 'productProviderId', nullable: false })
