@@ -2,13 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-// import { CreateUserChatDto } from 'src/chats/dto/create-user-chat.dto';
-// import { Chat } from 'src/chats/entities/chat.entity';
-// import { Message } from 'src/chats/entities/message.entity';
-// import { Currency } from 'src/common/enums/currency.enum';
-import { DeviceTokenStatus } from 'src/common/enums/device-token-status.enum';
-import { DeviceToken } from 'src/device-tokens/entities/device-token.entity';
-import { Brackets, IsNull, Not, Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
+
+import { DeviceTokenStatus } from '../common/enums/device-token-status.enum';
+import { UserRole } from '../common/enums/user-role.enum';
+import { DeviceToken } from '../device-tokens/entities/device-token.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -61,8 +59,9 @@ export class UsersService {
   async findAll(filters: {
     take?: number;
     skip?: number;
-    search?: number;
+    search?: string;
     isActive?: boolean;
+    role?: UserRole;
   }) {
     const take = filters.take || 10;
     const skip = filters.skip || 0;
@@ -104,6 +103,10 @@ export class UsersService {
       });
 
       query = query.andWhere(innerQuery);
+    }
+
+    if (filters.role) {
+      query = query.andWhere('user.role = :role', { role: filters.role });
     }
 
     query = await query.skip(skip).take(take).getManyAndCount();
