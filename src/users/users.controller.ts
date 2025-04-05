@@ -7,14 +7,18 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 // import { CreateUserChatDto } from './../chats/dto/create-user-chat.dto';
+import { IsLoggedInGuard } from 'src/auth/guards/is-logged-in.guard';
+import { UserRole } from 'src/common/enums/user-role.enum';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @UsePipes(new ValidationPipe())
@@ -24,21 +28,33 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
+  // currently this api is used to create admin and nurses only
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
+  @Post()
+  async create(@Body() createUserDto: CreateUserDto) {
+    if (createUserDto.role === UserRole.CUSTOMER) {
+      throw new Error('Customers cannot be created here');
+    }
+    return await this.usersService.create(createUserDto);
+  }
 
-  // @Roles(EmployeeRole.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
   @Get()
   async findAll(
-    @Query() queryParams: { take: number; skip: number; search: number },
+    @Query()
+    queryParams: {
+      take?: number;
+      skip?: number;
+      search?: string;
+      role: UserRole;
+    },
   ) {
     return await this.usersService.findAll(queryParams);
   }
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(IsLoggedInGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.usersService.findOneOrFail(id, ['addresses']);
