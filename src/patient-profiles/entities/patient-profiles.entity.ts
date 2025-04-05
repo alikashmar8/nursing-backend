@@ -13,21 +13,18 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { CreatePatientProfileDto } from '../dto/create-patient-profile.dto';
+import { CreatePatientProfilesDto } from '../dto/create-patient-profiles.dto';
 
-@Entity('patient_profile')
-export class PatientProfile  {
+@Entity('patient_profiles')
+export class PatientProfiles  {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ name: 'firstname', nullable: false })
-  firstname: string;
-
-  @Column({ name: 'midname', nullable: false })
-  midname: string;
+  firstName: string;
 
   @Column({ name: 'lastname', nullable: false })
-  lastname: string;
+  lastName: string;
 
   @Column({ name: 'dateOfBirth', nullable: false })
   dateOfBirth: Date;
@@ -43,40 +40,19 @@ export class PatientProfile  {
   @Column({ name: 'email', nullable: true, unique: false })
   email?: string;
 
-  @Column({ name: 'phoneNumber', nullable: false, unique: true })
+  @Column({ name: 'phoneNumber', nullable: false})
   phoneNumber: number;
 
-  @Column({ name: 'emergencyNumber', nullable: false, unique: true })
+  @Column({ name: 'emergencyNumber', nullable: false})
   emergencyNumber: number;
-
-  
-  //enum should be added
-  // @Column({
-  //   name: 'martial-status',
-  //   type: 'enum',
-  //   enum: MartialStatus,
-  //   nullable: false,
-  // })
-  // martial_status: MartialStatus;
-
-  //enum should be added 
-  // @Column({
-  //   name: 'language',
-  //   type: 'enum',
-  //   enum: PrefferedLanguage,
-  //   nullable: false,
-  // })
-  // language: PrefferedLanguage;
-
-
 
   @ManyToOne(() => User, (user) => user.patientProfiles)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ name: 'userId', nullable: true })
+  @Column({ name: 'userId', nullable: false })
   userId: string;
 
-  @OneToMany(() => Reservation, (reservation) => reservation.patientProfile)
+  @OneToMany(() => Reservation, (reservation) => reservation.patientProfiles)
   reservations: Reservation[];
 }

@@ -5,27 +5,31 @@ import {
   isNotEmpty,
   IsNotEmpty,
   IsOptional,
+  IsPhoneNumber,
   Length,
   Matches,
   ValidateNested,
 } from 'class-validator';
 import { UserGender } from 'src/common/enums/user-gender.enum';
 
-export class CreatePatientProfileDto {
+export class CreatePatientProfilesDto {
     @ApiProperty()
     @IsNotEmpty()
     @Length(3, 64)
     firstName: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
-    @Length(3, 64)
-    midName: string;
     
     @ApiProperty()
     @IsNotEmpty()
     @Length(3, 64)
     lastName: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    dateOfBirth: Date;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    gender: UserGender;
 
     @ApiProperty({
       required: false,
@@ -37,19 +41,14 @@ export class CreatePatientProfileDto {
   
     @ApiProperty()
     @IsNotEmpty()
-    @Length(6, 32)
-    phoneNumber: number;
+    @Length(6, 15)
+    phoneNumber: string;
 
     @ApiProperty()
     @IsNotEmpty()
-    @Length(6, 32)
-    emergencyNumber: number;
+    @Length(6, 15)
+    emergencyNumber: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    gender: UserGender;
+    userId: String;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    dateOfBirth: Date;
 }
