@@ -86,8 +86,8 @@ export class Reservation extends BaseEntity {
   })
   customerId: string;
 
-  @Column({ name: 'addressId', nullable: false })
-  addressId: string;
+  @Column({ name: 'addressId', nullable: true })
+  addressId?: string;
 
   @ManyToOne((type) => ReservationType, {
     onDelete: 'RESTRICT',
