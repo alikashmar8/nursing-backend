@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
+import { PatientProfile } from 'src/patient-profiles/entities/patient-profile.entity';
 import { Address } from '../../addresses/entities/address.entity';
 import { BaseEntity } from '../../common/entities/base-entity.entity';
 import { PaymentType } from '../../common/enums/payment-type.enum';
@@ -89,6 +90,9 @@ export class Reservation extends BaseEntity {
   @Column({ name: 'addressId', nullable: true })
   addressId?: string;
 
+  @Column({ name: 'patientProfileId', nullable: false })
+  patientProfileId: string;
+
   @ManyToOne((type) => ReservationType, {
     onDelete: 'RESTRICT',
   })
@@ -109,4 +113,12 @@ export class Reservation extends BaseEntity {
 
   @OneToMany((type) => Shift, (shift) => shift.reservation)
   shifts: Shift[];
+
+  @ManyToOne(
+    () => PatientProfile,
+    (patientProfile) => patientProfile.reservations,
+    { onDelete: 'RESTRICT' },
+  )
+  @JoinColumn({ name: 'patientProfileId' })
+  patientProfile: PatientProfile;
 }

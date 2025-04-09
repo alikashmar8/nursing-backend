@@ -1,6 +1,7 @@
-import { UserGender } from './../../common/enums/user-gender.enum';
 import * as argon from 'argon2';
 import { Exclude } from 'class-transformer';
+import { PatientProfile } from 'src/patient-profiles/entities/patient-profile.entity';
+import { Shift } from 'src/shifts/entities/shift.entity';
 import {
   BeforeInsert,
   Column,
@@ -10,14 +11,12 @@ import {
 } from 'typeorm';
 import { OneToMany } from 'typeorm/decorator/relations/OneToMany';
 import { Address } from '../../addresses/entities/address.entity';
-// import { Chat } from '../../chats/entities/chat.entity';
-// import { Message } from '../../chats/entities/message.entity';
 import { BaseEntity } from '../../common/entities/base-entity.entity';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { DeviceToken } from '../../device-tokens/entities/device-token.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Reservation } from '../../reservations/entities/reservation.entity';
-import { Shift } from 'src/shifts/entities/shift.entity';
+import { UserGender } from './../../common/enums/user-gender.enum';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -116,6 +115,11 @@ export class User extends BaseEntity {
   @Exclude()
   @OneToMany((type) => Shift, (shift) => shift.nurse)
   assignedShifts: Shift[];
+
+  @OneToMany(() => PatientProfile, (patientProfile) => patientProfile.user, {
+    cascade: true,
+  })
+  patientProfiles: PatientProfile[];
 
   // @Exclude()
   // @OneToMany((type) => Message, (message) => message.user)

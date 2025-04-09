@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateReservationDto {
   @ApiProperty({ required: true })
@@ -18,7 +18,10 @@ export class CreateReservationDto {
   @IsNotEmpty()
   addressId: string;
 
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  patientProfileId: string;
+
   // to be filled in code
-  @IsOptional()
   customerId: string;
 }
