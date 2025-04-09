@@ -1,72 +1,55 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PatientProfiles } from './entities/patient-profiles.entity';
-import { CreatePatientProfilesDto } from './dto/create-patient-profiles.dto';
-import { UpdatePatientProfilesDto } from './dto/update-patient-profiles.dto';
+import { CreatePatientProfileDTO } from './dto/create-patient-profile.dto';
+import { UpdatePatientProfileDTO } from './dto/update-patient-profile.dto';
+import { PatientProfile } from './entities/patient-profile.entity';
 
 @Injectable()
 export class PatientProfilesService {
   constructor(
-    @InjectRepository(PatientProfiles)
-    private readonly patientProfileRepository: Repository<PatientProfiles>,
+    @InjectRepository(PatientProfile)
+    private readonly patientProfileRepository: Repository<PatientProfile>,
   ) {}
 
-  async create(data: CreatePatientProfilesDto, id: string) {
-    const patientData = {
-      firstName: data.firstName, 
-      lastName: data.lastName, 
-      email: data.email,
-      phoneNumber: +data.phoneNumber,
-      emergencyNumber: +data.emergencyNumber,
-      gender: data.gender,
-      dateOfBirth: data.dateOfBirth,
-      userId: id
-    };
-    const patient = this.patientProfileRepository.create(patientData);
-    console.log(patient);
-    return await this.patientProfileRepository.save(patient).catch((err)=>{
+  async create(data: CreatePatientProfileDTO) {
+    const patient = this.patientProfileRepository.create(data);
+    return await this.patientProfileRepository.save(patient).catch((err) => {
       console.log(err);
       throw new BadRequestException('Error creating patient');
-    })
+    });
   }
 
-  async findAll() {
-    return await this.patientProfileRepository.find();
+  async findAll(filters: { userId: string }) {
+    return await this.patientProfileRepository.find({
+      where: { userId: filters.userId },
+    });
   }
 
   async findOne(id: string) {
-    return await this.patientProfileRepository.findOne({ where: { id } })
+    return await this.patientProfileRepository.findOne({ where: { id } });
   }
 
   async findOneOrFail(id: string) {
-      return await this.patientProfileRepository.findOne({ where: { id } }).catch((err)=>{
+    return await this.patientProfileRepository
+      .findOne({ where: { id } })
+      .catch((err) => {
         console.log(err);
         throw new BadRequestException('Error fetching patient');
-      }) 
+      });
   }
 
-  async update(id: string, data: UpdatePatientProfilesDto) {
-    const patientData = {
-      firstName: data.firstName, 
-      lastName: data.lastName, 
-      email: data.email,
-      phoneNumber: +data.phoneNumber,
-      emergencyNumber: +data.emergencyNumber,
-      gender: data.gender,
-      dateOfBirth: data.dateOfBirth,
-    };
-    await this.patientProfileRepository.update(id, patientData);
-    return await this.findOne(id).catch((err)=>{
+  async update(id: string, data: UpdatePatientProfileDTO) {
+    return await this.patientProfileRepository.update(id, data).catch((err) => {
       console.log(err);
       throw new BadRequestException('Error Updating patient');
-    }) 
+    });
   }
 
   async remove(id: string) {
-    await this.patientProfileRepository.delete(id).catch((err)=>{
+    return await this.patientProfileRepository.delete(id).catch((err) => {
       console.log(err);
       throw new BadRequestException('Error Deleting patient');
-    }) 
+    });
   }
 }

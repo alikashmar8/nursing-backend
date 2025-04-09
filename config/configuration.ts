@@ -18,9 +18,9 @@ export default () => ({
     // synchronize: process.env.TYPEORM_SYNCHRONIZE || 'false',
     synchronize: true,
     timezone: 'Z',
-    // ssl: {
-    //   rejectUnauthorized: false,
-    // },
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID,
