@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base-entity.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ShiftStatus } from './../../common/enums/shift-status.enum';
 import { Reservation } from './../../reservations/entities/reservation.entity';
 
@@ -93,10 +93,12 @@ export class Shift extends BaseEntity {
   @ManyToOne((type) => Reservation, (reservation) => reservation.shifts, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'reservationId' })
   reservation: Reservation;
 
   @ManyToOne((type) => User, (user) => user.assignedShifts, {
-    onDelete: 'CASCADE',
+    onDelete: 'RESTRICT',
   })
+  @JoinColumn({ name: 'nurseId' })
   nurse: User;
 }
